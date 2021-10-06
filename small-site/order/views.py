@@ -58,11 +58,13 @@ def order(request):
             # order는 DB, 즉 models에 정의 되어있으며 소문자로 써줘야 함
 
             order_item = Order.objects.get(pk = shop_item.order_set.latest('id').id)
-            # 가장 마지막 가져오기
+            # 가장 마지막 주문 가져오기
+            
             for food in food_list:
                   order_item.orderfood_set.create(food_name = food)
+                  # Orderfood에 추가
 
-            return HttpResponse(status=200)
+            return render(request, 'order/success.html')
             # return 값 필수
             
       elif request.method == 'GET':
