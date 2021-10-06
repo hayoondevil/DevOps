@@ -1,3 +1,4 @@
+from datetime import time
 from django.shortcuts import render
 
 from django.http import HttpResponse, JsonResponse
@@ -32,7 +33,7 @@ def menu(request, shop):
         menu = Menu.objects.filter(shop=shop) # 여러개 가능
         # serializer = MenuSerializer(menu, many=True)
         # return JsonResponse(serializer.data, safe=False)
-        return render(request, 'order/menu_list.html', {'menu_list':menu})
+        return render(request, 'order/menu_list.html', {'menu_list':menu, 'shop':shop})
 
   elif request.method == 'POST':
         data = JSONParser().parse(request)
@@ -42,5 +43,28 @@ def menu(request, shop):
             return JsonResponse(serializer.data, status=201)
         return JsonResponse(serializer.errors, status=400)
 
+from django.utils import timezone
+@csrf_exempt
+def order(request):
+      if request.method == 'POST':
+            shop = request.POST['shop']
+            address = request.POST['address']
+            food_list = request.POST.getlist('menu')
+            order_date = timezone.now()
 
-  
+            shop_item = Shop.objects.get(pk=int(shop))
+
+            shop_item.order_set.create(address=address, order_date=order_date, shop=int(shop))
+            # order는 DB, 즉 models에 정의 되어있으며 소문자로 써줘야 함
+
+            order_item = Order.objects.get(pk = shop_item.order_set.latest('id').id)
+            # 가장 마지막 가져오기
+            for food in food_list:
+                  order_item.orderfood_set.create(food_name = food)
+
+            return HttpResponse(status=200)
+            # return 값 필수
+            
+      elif request.method == 'GET':
+            order_list = Order.objects.all()
+            return render(request, 'order/order_list.html', {'order_list':order_list})
