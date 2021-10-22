@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-i422##j!v-a2er09t4!+ugsudu0dmwzeep9iz!l-ss(ihot2)v
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'order',
     'boss',    
     'delivery',
+    'user',
     'rest_framework',    
 ]
 
